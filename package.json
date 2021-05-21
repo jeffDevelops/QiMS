@@ -1,0 +1,17 @@
+{
+  "name": "monorepo",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "author": "jeffDevelops",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^6.1.0"
+  },
+  "workspaces": ["services/*"],
+  "scripts": {
+    "client:dev": "yarn workspace client dev",
+    "server:dev": "yarn workspace server dev",
+    "dev": "concurrently --kill-others-on-fail \"yarn server:dev\"  \"yarn client:dev\""
+  }
+}
