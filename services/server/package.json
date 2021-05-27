@@ -5,21 +5,50 @@
   "author": "jeffDevelops",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^2.23.0",
+    "@types/inquirer": "^7.3.1",
     "@types/node": "^15.6.0",
+    "db-migrate": "^0.11.12",
     "dotenv": "^9.0.2",
+    "east": "^2.0.2",
+    "east-postgres": "^1.0.2",
     "fastify": "^3.15.1",
+    "graphql-fields": "^2.0.3",
+    "graphql-scalars": "^1.9.3",
+    "inquirer": "^8.1.0",
+    "mercurius": "^7.6.1",
+    "open": "^8.1.0",
     "pg": "^8.6.0",
-    "typescript": "^4.2.4"
+    "prisma": "2.22.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^1.1.1",
+    "typescript": "^4.2.4",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
+    "@types/graphql-fields": "^1.3.3",
+    "@types/inquirer": "^7.3.1",
+    "@types/open": "^6.2.1",
     "@types/pg": "^8.6.0",
+    "@types/uuid": "^8.3.0",
     "nodemon": "^2.0.7",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "typegraphql-prisma": "^0.14.2"
   },
   "scripts": {
-    "dev": "nodemon --ext ts --exec \"yarn build --incremental && yarn serve\"",
+    "dev": "yarn build --incremental && yarn serve",
     "build": "tsc",
-    "serve": "node --require source-map-support/register dist/server.js"
+    "serve": "node --require source-map-support/register dist/server.js",
+    "prisma:init": "./node_modules/.bin/prisma init",
+    "prisma:generate": "./node_modules/.bin/prisma generate",
+    "prisma:introspect": "./node_modules/.bin/prisma introspect --force",
+    "prisma:db-pull": "./node_modules/.bin/prisma db pull",
+    "prisma:db-migrate": "./node_modules/.bin/prisma migrate deploy",
+    "qi:clean": "rm -rf ./.qi && rm -rf ./dist && rm -rf ./src/prisma && rm -rf ./migrations",
+    "qi:migration-rollback": "./node_modules/.bin/east rollback"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   }
 }
