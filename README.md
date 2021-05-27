@@ -11,9 +11,7 @@
           .::.
 ```
 
-----------------------------------------------------------------------------
-Qi /ˈtʃiː/ CHEE (noun, Chinese): vital energy channelled to animate the body
-----------------------------------------------------------------------------
+*Qi /ˈtʃiː/ CHEE (noun, Chinese): vital energy channelled to animate the body*
 
 A headless CMS that makes your database schema the single-source of truth.
 
