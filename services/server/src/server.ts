@@ -10,7 +10,6 @@ import { generateEnv } from './env'
 import { Colors, log } from './utils/log'
 import { generateCache } from './cache'
 import { Preferences } from './utils/Preferences'
-import { displayTitleCard } from './utils/titleCard'
 
 import { CustomNodeJsGlobal } from './types/Global'
 
@@ -21,7 +20,6 @@ declare const global: CustomNodeJsGlobal
    * MAIN
    */
 ;(async () => {
-  displayTitleCard()
   await generateCache()
   global.env = generateEnv()
   await establishConnection()

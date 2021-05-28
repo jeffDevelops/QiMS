@@ -1,9 +1,22 @@
 import fs from 'fs'
 import path from 'path'
-import { prompt } from 'inquirer'
+import { execSync } from 'child_process'
+import { prompt, Separator, QuestionCollection } from 'inquirer'
 import { Colors, log } from '../utils/log'
-import { writeMigration } from '../io/writeMigration'
 import { migrateLatest } from './migrateLatest'
+import { writeDefaultPrismaSchema } from '../io/writeDefaultPrismaSchema'
+import { createNewPrimaryKeyColumn } from '../migrations/createNewPrimaryKeyColumn'
+import { addPrimaryKeyToExistingColumn } from '../migrations/addPrimaryKeyToExistingColumn'
+
+enum MissingPKQuestionAnswers {
+  Skip = 'Skip',
+  New = 'Create New Primary Key Column',
+}
+
+/** Measures to eliminate magic string with dynamic and conditional question name */
+const pkColumnCreationQuestionName = 'Primary Key Column Creation'
+const getNameForPKColumnCreationQuestion = (modelName: string) =>
+  `${modelName} ${pkColumnCreationQuestionName}`
 
 /**
  * Because the generated schema is rewritten often, it's important get the most recent
@@ -31,8 +44,15 @@ export const handleMissingUniqueIdentifiers = async () => {
     log(
       `QiMS requires that each table explicity declares how its rows can be uniquely
 identified, and it found ${modelsWithMissingUUIDs.length} tables without
-primary keys. For the following tables, let QiMS know which column should
-be made the primary key.
+primary keys.
+
+For the following tables, let QiMS know which column should be
+made the primary key, or you can create a primary key for each
+table that doesn't have one.
+
+You can also skip certain tables--you might do this if the
+table is a join table and doesn't need to be surfaced (the
+GraphQL API handles joins for you as necessary).
       `,
     )
 
@@ -48,21 +68,40 @@ columns you specified.
       ...modelsWithMissingUUIDs.reduce(
         (questions: any[], modelStr: string, index: number) => {
           const [, declarationLine, ...columns] = modelStr.split('\n')
-          const modelName = declarationLine.split(' ')[1]
 
-          questions.push({
-            default: 0,
-            pageSize: 10,
-            type: 'rawlist',
-            name: modelName,
-            message: `${index + 1}/${
-              modelsWithMissingUUIDs.length
-            } Which column is the primary key for model ${modelName}`,
-            choices: [
-              ...columns.map((column) => column),
-              '  Skip (I understand that this model will not be queryable)',
-            ],
-          })
+          const modelName = declarationLine.split(' ')[1]
+          const modelColumnNames = columns.map((column) => column.split(' ')[0])
+
+          console.log({ modelColumnNames })
+
+          questions.push(
+            {
+              default: 0,
+              pageSize: 10,
+              type: 'rawlist',
+              name: modelName,
+              message: `${index + 1}/${
+                modelsWithMissingUUIDs.length
+              } Which column is the primary key for model ${modelName}`,
+              choices: [
+                ...columns.map((column) => column),
+                new Separator(),
+                MissingPKQuestionAnswers.New,
+                MissingPKQuestionAnswers.Skip,
+              ],
+            },
+            {
+              type: 'input',
+              when: (answers: any) => answers[modelName] === MissingPKQuestionAnswers.New,
+              name: getNameForPKColumnCreationQuestion(modelName),
+              message: `What would you like to name the new primary key column on ${modelName}`,
+              validate: (answers: any) =>
+                // Prevent the user from prividing a column name that already exists
+                !modelColumnNames.includes(
+                  answers[getNameForPKColumnCreationQuestion(modelName)],
+                ),
+            },
+          )
           return questions
         },
         [],
@@ -70,63 +109,39 @@ columns you specified.
     ]).then(async (answers) => {
       log(`\n🗺️  🦆 Thanks! Writing migrations to include those constraints now...\n`)
 
-      await Object.keys(answers).reduce(async (promise, modelName: string) => {
+      await Object.keys(answers).reduce(async (promise, questionName: string) => {
         await promise
 
-        if (
-          answers[modelName] ===
-          '  Skip (I understand that this model will not be queryable)'
-        )
-          return
+        /** Don't do anything if the model was skipped */
+        if (answers[questionName] === MissingPKQuestionAnswers.Skip) return
 
-        /** Isolate the model block within the schema.prisma file */
-        const schema = getSchema()
-        const modelStartIndex = schema.indexOf(
-          `${missingPrimaryKeyComment}\nmodel ${modelName} {\n`,
-        )
-        const modelEndIndexFromStart = schema.substring(modelStartIndex).indexOf(`}`) + 1
+        if (questionName.match(new RegExp(`^.+${pkColumnCreationQuestionName}$`))) {
+          const modelName = questionName.replace(pkColumnCreationQuestionName, '').trim()
+          const columnName = answers[questionName].split(' ')[0]
 
-        const model = schema.substring(
-          modelStartIndex +
-            missingPrimaryKeyComment.length /** Remove the missing primary key comment annotation */,
-          modelStartIndex + modelEndIndexFromStart,
-        )
+          await createNewPrimaryKeyColumn(modelName, columnName)
+        } else {
+          /** Don't write a migration to add a PK to an existing column if the user has created a new column */
+          if (answers[questionName] === MissingPKQuestionAnswers.New) return
 
-        /**
-         * Within that model, add the @id column annotation to the column the user specified,
-         * and remove the @@ignore model annotation
-         */
-        const newModel = model
-          .replace(answers[modelName], `${answers[modelName]} @id`)
-          .replace('@@ignore', '')
+          const columnName = answers[questionName]
+            .split(' ') // Split the column declaration into constituent parts; creates an array that looks like ['', '', '', '', 'column_name', '', '', '', '', 'data type', '', '', '', '', 'prisma annotations']
+            .filter((str: string) => !!str)[0] // Filter the empty strings out, and return the first string (the column name)
 
-        /** Write the new model to the schema.prisma file */
-        const newSchema =
-          schema.substring(0, modelStartIndex) + // Keep everything before the new model
-          newModel + // Add the new model
-          schema.substring(modelStartIndex + modelEndIndexFromStart) // Keep everything after the new model
-
-        fs.writeFileSync(
-          path.join(__dirname, '../../src/prisma/schema.prisma'),
-          newSchema,
-        )
-
-        const columnName = answers[modelName]
-          .split(' ') // Split the column declaration into constituent parts
-          .filter((str: string) => !!str)[0] // Filter the empty strings out, and return the first string (the column name)
-
-        /** Generate the migration in server/src/migrations */
-        await writeMigration(
-          `ALTER TABLE ${modelName} ADD CONSTRAINT ${modelName}_pkey PRIMARY KEY (${columnName});`,
-          `ALTER TABLE ${modelName} DROP CONSTRAINT ${modelName}_pkey;`,
-          `${modelName}-primary-key`,
-        )
+          await addPrimaryKeyToExistingColumn(answers[questionName], columnName)
+        }
 
         return promise
       }, Promise.resolve())
 
       /** Once all primary key migrations are created run all */
       await migrateLatest()
+
+      /** Overwrite the schema.prisma with the default, so that the database can be freshly introspected again */
+      writeDefaultPrismaSchema()
+
+      /** Pull the schema after migrating */
+      execSync('yarn prisma:db-pull')
     })
   }
 }

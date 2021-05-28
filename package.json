@@ -6,12 +6,20 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "concurrently": "^6.1.0"
+    "dotenv-cli": "^4.0.0",
+    "stmux": "^1.8.1",
+    "ts-node": "^10.0.0"
   },
-  "workspaces": ["services/*"],
+  "workspaces": [
+    "services/*"
+  ],
   "scripts": {
     "client:dev": "yarn workspace client dev",
     "server:dev": "yarn workspace server dev",
-    "dev": "concurrently --kill-others-on-fail \"yarn server:dev\"  \"yarn client:dev\""
+    "qi": "yarn --silent display-title && ./node_modules/.bin/stmux --mouse -- [  -s 3/4 --title 'qiMS CLI' \"npm run server:dev\" .. -s 1/4 --title 'qiMS Admin Client Dev Server' \"npm run client:dev\" ]",
+    "qi:clean": "yarn workspace server qi:clean",
+    "qi:rollback": "./node_modules/.bin/dotenv -e .env ./node_modules/.bin/ts-node ./services/scripts/rollbackMigrations.ts",
+    "qi:hard-reset": "yarn qi:rollback && rm -rf ./services/server/migrations && yarn qi:clean",
+    "display-title": "clear && node ./services/scripts/displayTitleCard.js && read -n 1 -s -r -p 'Press any key to continue' && echo '\n\nLoading...'"
   }
 }

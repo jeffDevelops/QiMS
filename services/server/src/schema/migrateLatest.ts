@@ -7,6 +7,7 @@ import { log } from '../utils/log'
 declare const global: CustomNodeJsGlobal
 
 export const migrateLatest = async () => {
+  log('\nChecking for migrations...\n')
   const migrationsDirPath = path.join(__dirname, '../../migrations')
 
   /** Throw if no migrations directory exists */
@@ -16,7 +17,9 @@ export const migrateLatest = async () => {
 
   /** Log target migrations before execution */
   global.migrations.once('beforeMigrateMany', ({ migrationNames }) => {
-    log(`Found new migrations! Applying:\n${migrationNames}\n`)
+    if (migrationNames.length > 0) {
+      log(`Found new migrations! Applying:\n${migrationNames}\n`)
+    }
   })
 
   try {

@@ -35,6 +35,8 @@ generator typegraphql {
 `
 
 export const writeDefaultPrismaSchema = () => {
-  fs.mkdirSync(path.join(__dirname, '../../src/prisma'))
+  if (!fs.existsSync(path.join(__dirname, '../../src/prisma')))
+    fs.mkdirSync(path.join(__dirname, '../../src/prisma'))
+
   fs.writeFileSync(path.join(__dirname, '../../src/prisma/schema.prisma'), writeSchema())
 }

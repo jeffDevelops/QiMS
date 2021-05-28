@@ -19,6 +19,7 @@
     "mercurius": "^7.6.1",
     "open": "^8.1.0",
     "pg": "^8.6.0",
+    "pg-format": "^1.0.4",
     "prisma": "2.22.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
@@ -31,6 +32,7 @@
     "@types/inquirer": "^7.3.1",
     "@types/open": "^6.2.1",
     "@types/pg": "^8.6.0",
+    "@types/pg-format": "^1.0.1",
     "@types/uuid": "^8.3.0",
     "nodemon": "^2.0.7",
     "source-map-support": "^0.5.19",
@@ -45,8 +47,7 @@
     "prisma:introspect": "./node_modules/.bin/prisma introspect --force",
     "prisma:db-pull": "./node_modules/.bin/prisma db pull",
     "prisma:db-migrate": "./node_modules/.bin/prisma migrate deploy",
-    "qi:clean": "rm -rf ./.qi && rm -rf ./dist && rm -rf ./src/prisma && rm -rf ./migrations",
-    "qi:migration-rollback": "./node_modules/.bin/east rollback"
+    "qi:clean": "rm -rf ./.qi && rm -rf ./dist && rm -rf ./src/prisma && rm -rf ./migrations"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"

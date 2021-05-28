@@ -61,8 +61,8 @@ dump from the one you'd like to experiment with.
     const destructiveChangesPrompt = {
       type: 'rawlist',
       name: `I understand that qiMS migrates existing data, mutating the database
-      schema and potentially breaking other applications that consume it (use arrow
-        keys and Return key to select, or select a number)`,
+schema and potentially breaking other applications that consume it (use arrow
+keys and Return key to select, or select a number)`,
       default: 0,
       choices: [
         'I acknowledge that qiMS gives me the power to make destructive changes.',

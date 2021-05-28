@@ -31,7 +31,7 @@ export const establishConnection = async () => {
 
   if (!fs.existsSync(path.join(__dirname, '../src/prisma/schema.prisma'))) {
     log(`✌️  This looks like your first time starting qiMS with this database connection.\n
-🧐 Introspecting your database schema...
+🧐  Introspecting your database schema...
   `)
     writeDefaultPrismaSchema()
     execSync('yarn prisma:db-pull')

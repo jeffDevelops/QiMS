@@ -1,5 +1,4 @@
 import path from 'path'
-import { Client } from 'pg'
 import { MigrationManager } from 'east'
 import { CustomNodeJsGlobal } from './types/Global'
 
