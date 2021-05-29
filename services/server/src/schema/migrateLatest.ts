@@ -18,7 +18,11 @@ export const migrateLatest = async () => {
   /** Log target migrations before execution */
   global.migrations.once('beforeMigrateMany', ({ migrationNames }) => {
     if (migrationNames.length > 0) {
-      log(`Found new migrations! Applying:\n${migrationNames}\n`)
+      log(
+        `Found new migrations! Applying:\n${migrationNames.map(
+          (migration) => `${migration}\n`,
+        )}`,
+      )
     }
   })
 

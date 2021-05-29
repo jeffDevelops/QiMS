@@ -55,11 +55,11 @@ export const generateEnv = (): Env => {
 
   let DATABASE_USER: string | undefined
   if (!process.env.DATABASE_USER) {
+    log(NO_DB_USER, Colors.ERROR)
     process.exit(1)
   }
   DATABASE_USER = process.env.DATABASE_USER
 
-  log(NO_DB_USER, Colors.ERROR)
   /**
    * ---------- DATABASE_PASSWORD ---------
    */

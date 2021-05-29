@@ -1,11 +1,14 @@
 import sanitize from 'pg-format'
 import { writeMigration } from '../io/writeMigration'
+import { Migration } from '../types/Migration'
 
 export const addPrimaryKeyToExistingColumn = async (
   modelName: string,
   columnName: string,
-) => {
-  await writeMigration(
+): Promise<Migration> => {
+  const fileName = `${modelName}-add-primary-key`
+
+  return await writeMigration(
     sanitize(
       /* sql */ `ALTER TABLE
   %I
@@ -24,6 +27,6 @@ export const addPrimaryKeyToExistingColumn = async (
       modelName,
       columnName,
     ),
-    `${modelName}-add-primary-key`,
+    fileName,
   )
 }

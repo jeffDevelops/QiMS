@@ -29,21 +29,19 @@ export const establishConnection = async () => {
 
   await initializeMigrationManager()
 
-  if (!fs.existsSync(path.join(__dirname, '../src/prisma/schema.prisma'))) {
-    log(`✌️  This looks like your first time starting qiMS with this database connection.\n
+  log(`
 🧐  Introspecting your database schema...
   `)
-    writeDefaultPrismaSchema()
-    execSync('yarn prisma:db-pull')
+  writeDefaultPrismaSchema()
+  execSync('yarn prisma:db-pull')
 
-    await handleMissingUniqueIdentifiers()
+  await handleMissingUniqueIdentifiers()
 
-    log(
-      `✍️  Auto-generating your GraphQL API. This could take a minute, depending on the number of tables...\n`,
-    )
+  log(
+    `✍️  Auto-generating your GraphQL API. This could take a minute, depending on the number of tables...\n`,
+  )
 
-    execSync('yarn prisma:generate')
-  }
+  execSync('yarn prisma:generate')
 
   /**@ts-ignore Once Prisma generate has been called, dynamically import the generated module -- it will now have all of the generated methods */
   const { PrismaClient } = await import('./generated/client')

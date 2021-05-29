@@ -20,6 +20,6 @@
     "qi:clean": "yarn workspace server qi:clean",
     "qi:rollback": "./node_modules/.bin/dotenv -e .env ./node_modules/.bin/ts-node ./services/scripts/rollbackMigrations.ts",
     "qi:hard-reset": "yarn qi:rollback && rm -rf ./services/server/migrations && yarn qi:clean",
-    "display-title": "clear && node ./services/scripts/displayTitleCard.js && read -n 1 -s -r -p 'Press any key to continue' && echo '\n\nLoading...'"
+    "display-title": "clear && ./node_modules/.bin/ts-node ./services/scripts/displayTitleCard.ts && read -n 1 -s -r -p 'Press any key to continue, or Ctrl + c to quit' && echo '\n\nLoading...'"
   }
 }

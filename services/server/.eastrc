@@ -1,3 +1,4 @@
 {
-	"dir": "./migrations"
+	"dir": "./migrations",
+	"migrationNumberFormat": "dateTime"
 }

@@ -1,5 +1,6 @@
 import sanitize from 'pg-format'
 import { writeMigration } from '../io/writeMigration'
+import { Migration } from '../types/Migration'
 
 /**
  * Writes a migration to create a new serial primary key column
@@ -8,8 +9,10 @@ import { writeMigration } from '../io/writeMigration'
 export const createNewPrimaryKeyColumn = async (
   modelName: string,
   columnName: string,
-) => {
-  await writeMigration(
+): Promise<Migration> => {
+  const fileName = `${modelName}-new-primary-key-column-${columnName}`
+
+  return await writeMigration(
     sanitize(
       /* sql */ `ALTER TABLE
   %I
@@ -27,6 +30,6 @@ export const createNewPrimaryKeyColumn = async (
       modelName,
       columnName,
     ),
-    `${modelName}-new-primary-key-column-${columnName}`,
+    fileName,
   )
 }

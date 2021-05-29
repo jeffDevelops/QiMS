@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { CustomNodeJsGlobal } from '../types/Global'
+import { Migration } from '../types/Migration'
 
 declare const global: CustomNodeJsGlobal
 
@@ -12,7 +13,7 @@ export const writeMigration = async (
   upStatements: string, // The SQL for the migration function
   downStatements: string, // The SQL for the rollback function
   fileName: string, // The name of the migration file
-) => {
+): Promise<Migration> => {
   const migrationsDirPath = path.join(__dirname, '../../migrations')
 
   /** Create the migrations directory if it doesn't yet exist */
@@ -111,4 +112,9 @@ export const writeMigration = async (
   )
 
   fs.writeFileSync(migrationFilePath, imports)
+
+  return {
+    fileName: `${migrationFileName}.js`,
+    migrationCreated: true,
+  }
 }
