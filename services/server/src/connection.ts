@@ -38,7 +38,7 @@ export const establishConnection = async () => {
   await handleMissingUniqueIdentifiers()
 
   log(
-    `✍️  Auto-generating your GraphQL API. This could take a minute, depending on the number of tables...\n`,
+    `\n✍️  Auto-generating your GraphQL API. This could take a minute, depending on the number of tables...\n`,
   )
 
   execSync('yarn prisma:generate')

@@ -41,7 +41,7 @@ If you'd like to try qiMS with an existing dataset, we'd recommend either
 2) making a copy of the existing database by restoring an empty database with a
 dump from the one you'd like to experiment with.
 --------------------------------------------------------------------------`,
-  Colors.WARN,
+  Colors.ORANGE,
 )
 
 log(`

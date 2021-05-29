@@ -2,7 +2,8 @@ import chalk from 'chalk'
 
 export enum Colors {
   INFO = '#39C1CE', // Rakish blue
-  WARN = '#F5821E', // Rakish orange
+  ORANGE = '#F5821E', // Rakish orange
+  WARN = '#BCB933',
   ERROR = '#D72638',
   SUCCESS = '#81F495',
 }

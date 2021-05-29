@@ -1,3 +1,4 @@
+import { ADDING_PRIMARY_KEY_CONSTRAINT_FAILED } from './migration/addingPrimaryKeyConstraintFailed'
 import { UNPARSEABLE_PORT_VALUE } from './env/unparseablePortValue'
 import { USING_DB_URL_WARNING } from './env/usingDatabaseUrlWarning'
 import { NO_DB_HOST } from './env/noDatabaseHost'
@@ -7,6 +8,7 @@ import { NO_DB_PORT_WARNING } from './env/noDatabasePortWarning'
 import { NO_DB_USER } from './env/noDatabaseUser'
 
 export {
+  ADDING_PRIMARY_KEY_CONSTRAINT_FAILED,
   NO_DB_HOST,
   NO_DB_NAME,
   NO_DB_PASSWORD_WARNING,

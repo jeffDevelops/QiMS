@@ -5,7 +5,7 @@ export abstract class Preferences {
   /**
    * Gets the current .qi/preferences.json value
    */
-  static getPreferences = () =>
+  static getPreferences = (): QiPreferences =>
     JSON.parse(fs.readFileSync('./.qi/preferences.json', 'utf-8'))
 
   /**
