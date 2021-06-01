@@ -49,6 +49,9 @@ declare const global: CustomNodeJsGlobal
 
     if (process.env.NODE_ENV === 'development') {
       open('http://localhost:8888/playground')
+      if (!Preferences.getPreferences().hasOptedOutOfAdministrativeUserTable) {
+        open('http://localhost:3000')
+      }
     }
 
     log(

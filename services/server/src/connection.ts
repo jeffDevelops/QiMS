@@ -4,6 +4,7 @@ import { execSync } from 'child_process'
 import { writeDefaultPrismaSchema } from './io/writeDefaultPrismaSchema'
 import { log } from './utils/log'
 import { handleMissingUniqueIdentifiers } from './schema/handleMissingUniqueIdentifiers'
+import { validateAdministrativeUserTable } from './schema/validateAdministrativeUserTable'
 import { CustomNodeJsGlobal } from './types/Global'
 import { initializeMigrationManager } from './migrations'
 
@@ -30,12 +31,14 @@ export const establishConnection = async () => {
   await initializeMigrationManager()
 
   log(`
-🧐  Introspecting your database schema...
+🧐 Introspecting your database schema...
   `)
   writeDefaultPrismaSchema()
   execSync('yarn prisma:db-pull')
 
+  /** Once the schema is introspected, check for the things qiMS needs to work properly */
   await handleMissingUniqueIdentifiers()
+  await validateAdministrativeUserTable()
 
   log(
     `\n✍️  Auto-generating your GraphQL API. This could take a minute, depending on the number of tables...\n`,
@@ -43,7 +46,11 @@ export const establishConnection = async () => {
 
   execSync('yarn prisma:generate')
 
-  /**@ts-ignore Once Prisma generate has been called, dynamically import the generated module -- it will now have all of the generated methods */
+  /**
+   * Once Prisma generate has been called, dynamically import the generated
+   * module -- it will now have all of the generated methods
+   */
+  /**@ts-ignore */
   const { PrismaClient } = await import('./generated/client')
 
   // TODO: populate from environment variables

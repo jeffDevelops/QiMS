@@ -9,6 +9,7 @@ import { writeDefaultPrismaSchema } from '../io/writeDefaultPrismaSchema'
 import { createNewPrimaryKeyColumn } from '../migrations/createNewPrimaryKeyColumn'
 import { addPrimaryKeyToExistingColumn } from '../migrations/addPrimaryKeyToExistingColumn'
 import { ADDING_PRIMARY_KEY_CONSTRAINT_FAILED } from '../errors/migration/addingPrimaryKeyConstraintFailed'
+import { PRISMA_MISSING_PRIMARY_KEY_COMMENT } from '../config/constants'
 import { Preferences } from '../utils/Preferences'
 
 enum MissingPKQuestionAnswers {
@@ -18,9 +19,6 @@ enum MissingPKQuestionAnswers {
 
 /** Measure to eliminate magic string with dynamic and conditional question name */
 const PK_COLUMN_CREATION_QUESTION_NAME = 'Primary Key Column Creation'
-
-const PRISMA_MISSING_PRIMARY_KEY_COMMENT =
-  '/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.'
 
 /** Maintain a list of models the user has yet to process */
 const modelsWithMissingUUIDs: string[] = []
@@ -44,9 +42,12 @@ export const handleMissingUniqueIdentifiers = async () => {
     ...blocks.filter((block) => block.startsWith(PRISMA_MISSING_PRIMARY_KEY_COMMENT)),
   )
 
+  const preferences = Preferences.getPreferences()
+
   /** Don't prompt if the user has already skipped all of the models without UUIDs */
   if (
-    Preferences.getPreferences().unsurfacedModels.every(
+    preferences.unsurfacedModels.length > 0 &&
+    preferences.unsurfacedModels.every(
       (modelName: string) =>
         !!modelsWithMissingUUIDs.find(
           (modelDeclaration: string) =>
@@ -100,6 +101,12 @@ async function recursivelyPromptUntilPrimaryKeysSuccessfullyAdded() {
        */
       if (Preferences.getPreferences().unsurfacedModels.includes(modelName))
         return promise
+
+      /**
+       * Don't prompt if the model name is prepended with qi_ -- these models are
+       * validated on startup after this missing UUID step.
+       */
+      if (modelName.startsWith('qi_')) return promise
 
       await prompt([
         {

@@ -11,6 +11,7 @@ export const generateCache = () => {
   if (!fs.existsSync('./.qi/preferences.json')) {
     const qiPreferences: QiPreferences = {
       unsurfacedModels: [],
+      hasOptedOutOfAdministrativeUserTable: false,
     }
 
     fs.writeFileSync('./.qi/preferences.json', JSON.stringify(qiPreferences))

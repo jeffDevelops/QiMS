@@ -25,7 +25,7 @@ export const generateEnv = (): Env => {
 
   /** Default to 8888, if the port isn't specified */
   if (!process.env.BACKEND_PORT) {
-    log('No port specified in .env. Defaulting to 8888...\n')
+    log('\nNo port specified in .env. Defaulting to 8888...\n')
     BACKEND_PORT = 8888
   } else {
     /** Ensure the BACKEND_PORT is parseable into an integer */

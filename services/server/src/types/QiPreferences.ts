@@ -12,4 +12,10 @@ export interface QiPreferences {
    * The user may elect to surface skipped models in the UI.
    */
   unsurfacedModels: string[]
+
+  /**
+   * Whether the user has opted out of adding the administrative user table `qi_administrators`.
+   * Opting out of adding this table to the connected database disables the Admin Client
+   */
+  hasOptedOutOfAdministrativeUserTable: boolean
 }

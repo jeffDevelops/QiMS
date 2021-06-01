@@ -1,6 +1,6 @@
 import { log, Colors } from '../server/src/utils/log'
-
-log(`
+;(() => {
+  log(`
                                 ::::.        .:::::           ..:::..      
                      ::           :: :.     .. ::          .::       ::.   
      ..:::..::                    ::  .::  .   ::           .::             
@@ -26,8 +26,8 @@ It also gives you an admin user interface to define new entities and
 relationships.
 `)
 
-log(
-  `----------------------------------------------------------------------------
+  log(
+    `----------------------------------------------------------------------------
 If any additional applications consume this data, you will likely be breaking
 those applications! 
 
@@ -41,16 +41,19 @@ If you'd like to try qiMS with an existing dataset, we'd recommend either
 2) making a copy of the existing database by restoring an empty database with a
 dump from the one you'd like to experiment with.
 --------------------------------------------------------------------------`,
-  Colors.ORANGE,
-)
+    Colors.ORANGE,
+  )
 
-log(`
+  log(`
 About this CLI
 
-qiMS requires multiple processes to run and will automatically start a terminal
-multiplexor. For best results, make this terminal full-screen. To quit, click
-into each child process and Ctrl + c at any time, just like you would with any
-other terminal window.
+When the administrative UI is enabled, qiMS requires multiple processes to run
+and will automatically start a terminal multiplexor. For best results, make this
+terminal full-screen. To quit, click into each child process and Ctrl + c at any
+time, just like you would with any other terminal window.
 
 On startup, the CLI process is interactive and will require your input.
 `)
+
+  process.exit(0)
+})()

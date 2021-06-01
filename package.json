@@ -16,10 +16,13 @@
   "scripts": {
     "client:dev": "yarn workspace client dev",
     "server:dev": "yarn workspace server dev",
-    "qi": "yarn --silent display-title && ./node_modules/.bin/stmux --mouse -- [  -s 3/4 --title 'qiMS CLI' \"npm run server:dev\" .. -s 1/4 --title 'qiMS Admin Client Dev Server' \"npm run client:dev\" ]",
+    "qi": "if [[ $(yarn qi:isSchemaReadonlyMode) ]]; then yarn qi:schema-readonly-mode; else yarn qi:schema-read-write-mode; fi",
+    "qi:isSchemaReadonlyMode": "./node_modules/.bin/ts-node ./services/scripts/isSchemaReadonlyMode.ts",
+    "qi:schema-read-write-mode": "yarn --silent display-title && ./node_modules/.bin/stmux --mouse -- [  -s 3/4 --title 'qiMS CLI' \"yarn server:dev\" .. -s 1/4 --title 'qiMS Admin Client Dev Server' \"yarn client:dev\" ]",
+    "qi:schema-readonly-mode": "yarn --silent display-title && yarn server:dev",
     "qi:clean": "yarn workspace server qi:clean",
     "qi:rollback": "./node_modules/.bin/dotenv -e .env ./node_modules/.bin/ts-node ./services/scripts/rollbackMigrations.ts",
     "qi:hard-reset": "yarn qi:rollback && rm -rf ./services/server/migrations && yarn qi:clean",
-    "display-title": "clear && ./node_modules/.bin/ts-node ./services/scripts/displayTitleCard.ts && read -n 1 -s -r -p 'Press any key to continue, or Ctrl + c to quit' && echo '\n\nLoading...'"
+    "display-title": "./node_modules/.bin/ts-node ./services/scripts/displayTitleCard.ts && read -n 1 -s -r -p 'Press any key to continue, or Ctrl + c to quit' && echo '\n\nLoading...'"
   }
 }
