@@ -14,7 +14,7 @@ export interface QiPreferences {
   unsurfacedModels: string[]
 
   /**
-   * Whether the user has opted out of adding the administrative user table `qi_administrators`.
+   * Whether the user has opted out of adding the administrative user table `qi_administrator`.
    * Opting out of adding this table to the connected database disables the Admin Client
    */
   hasOptedOutOfAdministrativeUserTable: boolean

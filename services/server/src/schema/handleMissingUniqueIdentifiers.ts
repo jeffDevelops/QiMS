@@ -126,7 +126,7 @@ async function recursivelyPromptUntilPrimaryKeysSuccessfullyAdded() {
           type: 'input',
           when: (answers: any) => answers[modelName] === MissingPKQuestionAnswers.New,
           name: `${modelName} ${PK_COLUMN_CREATION_QUESTION_NAME}`,
-          message: `What would you like to name the new primary key column on ${modelName}?`,
+          message: `What would you like to name the new primary key column on ${modelName}? Generally, column names are lower snake_case.`,
           validate: (userInput: string) => {
             /** Prevent the user from providing a column name that already exists */
             if (modelColumnNames.includes(userInput)) {

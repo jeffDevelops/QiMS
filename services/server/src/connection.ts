@@ -4,7 +4,7 @@ import { execSync } from 'child_process'
 import { writeDefaultPrismaSchema } from './io/writeDefaultPrismaSchema'
 import { log } from './utils/log'
 import { handleMissingUniqueIdentifiers } from './schema/handleMissingUniqueIdentifiers'
-import { validateAdministrativeUserTable } from './schema/validateAdministrativeUserTable'
+import { validateAdministrativeUserTable } from './schema/validateAdministrativeUserSchema'
 import { CustomNodeJsGlobal } from './types/Global'
 import { initializeMigrationManager } from './migrations'
 

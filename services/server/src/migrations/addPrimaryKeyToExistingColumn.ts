@@ -16,7 +16,7 @@ export const addPrimaryKeyToExistingColumn = async (
     %I_pkey
     PRIMARY KEY (%I);`,
       modelName,
-      columnName,
+      modelName,
       columnName,
     ),
     sanitize(
